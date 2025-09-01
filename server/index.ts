@@ -11,30 +11,36 @@ handler.on("Issue", event => {
   if (event.action === "update" && event.data.state.type === "completed" && event.updatedFrom!.type !== "completed") {
     console.log(`Issue ${event.data.title} completed`)
 
-    connectedClients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send("confetti")
-      }
-    })
+    notifyClients()
   }
 })
 
-Bun.serve({
+function notifyClients() {
+  console.log("Notifying clients")
+  connectedClients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send("confetti")
+      console.log("Notified client")
+    }
+  })
+}
+
+const server = Bun.serve({
   port: env.PORT,
+  hostname: "0.0.0.0",
   fetch(req, server) {
     const url = new URL(req.url)
 
-    if (url.pathname === "/confetti") {
+    if (url.pathname === "/linear") {
       return handler(req)
     }
+    if (url.pathname === "/confetti") {
+      notifyClients()
+      return new Response("OK", { status: 200 })
+    }
 
-    if (url.pathname === "/ws") {
-      // Upgrade the request to a WebSocket connection
-      const upgraded = server.upgrade(req)
-      if (upgraded) {
-        return undefined
-      }
-      return new Response("WebSocket upgrade failed", { status: 500 })
+    if (server.upgrade(req)) {
+      return
     }
 
     return new Response("Not found", { status: 404 })
@@ -51,3 +57,4 @@ Bun.serve({
     message(ws, message) {},
   },
 })
+console.log(`Server is running on ${server.url}`)
