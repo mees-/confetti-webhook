@@ -1,4 +1,3 @@
-import hasAccessibilityPermissions from "macos-accessibility-permissions"
 import env from "./env"
 import path from "path"
 import fs from "fs/promises"
@@ -16,21 +15,19 @@ const ERROR_CODES = {
   ACCESSIBILITY_PERMISSIONS_NOT_GRANTED: 175,
 }
 ;(async () => {
-  if (!hasAccessibilityPermissions({ ask: true })) {
-    console.error("Accessibility permissions not granted.")
-    console.error("Please grant accessibility permissions in System Preferences > Accessibility > Confetti-websocket")
-    console.error("Then restart the app")
-    process.exit(ERROR_CODES.ACCESSIBILITY_PERMISSIONS_NOT_GRANTED)
-  }
-
   // clean up argV
   const argv = [...Bun.argv]
-  if (argv[0] === "bun" || argv[0] === "node") {
+  if (argv[0]?.endsWith("node") || argv[0]?.endsWith("bun")) {
     argv.shift()
   }
   if (argv[0]?.startsWith("/$bunfs")) {
     argv.shift()
   }
+  if (argv[0]?.endsWith("index.ts")) {
+    argv.shift()
+  }
+
+  console.log("cleaned argv", argv)
 
   // Parse command line arguments
   const { values } = parseArgs({

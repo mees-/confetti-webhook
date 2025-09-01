@@ -12,7 +12,5 @@
   "peerDependencies": {
     "typescript": "^5"
   },
-  "dependencies": {
-    "macos-accessibility-permissions": "^1.0.1"
-  }
+  "dependencies": {}
 }

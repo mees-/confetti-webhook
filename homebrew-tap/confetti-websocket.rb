@@ -1,27 +1,29 @@
 class ConfettiWebsocket < Formula
   desc "Confetti WebSocket client that runs as a background daemon"
   homepage "https://github.com/mees-/confetti-webhook"
-  version "1.0.0"
+  version "0.1.0"
   license "MIT"
 
   depends_on "bun"
 
+  # Use the source code repository
+  url "https://github.com/mees-/confetti-webhook/archive/refs/tags/v0.1.0.tar.gz"
+  sha256 "REPLACE_WITH_ACTUAL_SHA256"
+
   def install
-    # Install dependencies
-    system "bun", "install"
-    
-    # Build the executable
-    system "bun", "run", "release"
-    
-    # Install the binary
-    bin.install "dist/confetti-websocket"
+    # Build from source
+    cd "client" do
+      system "bun", "install"
+      system "bun", "run", "release"
+      bin.install "dist/confetti-websocket"
+    end
     
     # Create the plist file for launchd
-    plist_path = prefix/"homebrew.mxcl.io.mees.confetti-websocket.plist"
+    plist_path = prefix/"homebrew.mxcl.confetti-websocket.plist"
     plist_path.write plist_content
     
     # Install the plist to the user's LaunchAgents directory
-    user_plist_path = Dir.home/"Library/LaunchAgents/homebrew.mxcl.io.mees.confetti-websocket.plist"
+    user_plist_path = Dir.home/"Library/LaunchAgents/homebrew.mxcl.confetti-websocket.plist"
     user_plist_path.write plist_content
     
     # Set proper permissions
@@ -69,7 +71,7 @@ class ConfettiWebsocket < Formula
     system "brew", "services", "stop", "confetti-websocket"
     
     # Remove the plist from LaunchAgents
-    user_plist_path = Dir.home/"Library/LaunchAgents/homebrew.mxcl.io.mees.confetti-websocket.plist"
+    user_plist_path = Dir.home/"Library/LaunchAgents/homebrew.mxcl.confetti-websocket.plist"
     user_plist_path.delete if user_plist_path.exist?
     
     # Remove the binary
@@ -94,7 +96,7 @@ class ConfettiWebsocket < Formula
       <plist version="1.0">
       <dict>
           <key>Label</key>
-          <string>homebrew.mxcl.io.mees.confetti-websocket</string>
+          <string>homebrew.mxcl.confetti-websocket</string>
           <key>ProgramArguments</key>
           <array>
               <string>#{opt_bin}/confetti-websocket</string>
@@ -106,7 +108,7 @@ class ConfettiWebsocket < Formula
           <key>StandardOutPath</key>
           <string>#{var}/log/confetti-websocket.log</string>
           <key>StandardErrorPath</key>
-          <string>#{var}/log/confetti-websocket.error.log</string>
+          <string>#{var}/log/confetti-websocket.log</string>
           <key>WorkingDirectory</key>
           <string>#{Dir.home}</string>
           <key>EnvironmentVariables</key>
