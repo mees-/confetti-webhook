@@ -15,23 +15,9 @@ const ERROR_CODES = {
   ACCESSIBILITY_PERMISSIONS_NOT_GRANTED: 175,
 }
 ;(async () => {
-  // clean up argV
-  const argv = [...Bun.argv]
-  if (argv[0]?.endsWith("node") || argv[0]?.endsWith("bun")) {
-    argv.shift()
-  }
-  if (argv[0]?.startsWith("/$bunfs")) {
-    argv.shift()
-  }
-  if (argv[0]?.endsWith("index.ts")) {
-    argv.shift()
-  }
-
-  console.log("cleaned argv", argv)
-
   // Parse command line arguments
   const { values } = parseArgs({
-    args: argv,
+    args: Bun.argv,
     options: {
       url: {
         type: "string",
@@ -43,7 +29,7 @@ const ERROR_CODES = {
       },
     },
     strict: true,
-    allowPositionals: false,
+    allowPositionals: true,
   })
 
   // Show help if requested
