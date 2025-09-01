@@ -49,12 +49,16 @@ const server = Bun.serve({
     open(ws) {
       console.log("WebSocket client connected")
       connectedClients.add(ws)
+      console.log(`${connectedClients.size} clients connected`)
     },
     close(ws) {
       console.log("WebSocket client disconnected")
       connectedClients.delete(ws)
+      console.log(`${connectedClients.size} clients connected`)
     },
-    message(ws, message) {},
+    message(ws, message) {
+      console.log("WebSocket client message", message)
+    },
   },
 })
 console.log(`Server is running on ${server.url}`)

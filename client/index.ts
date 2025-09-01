@@ -2,7 +2,7 @@ import env from "./env"
 import path from "path"
 import fs from "fs/promises"
 import { parseArgs } from "util"
-import { spawn } from "child_process"
+import { spawn, spawnSync } from "child_process"
 
 const APP_NAME = "confetti-websocket"
 const ERROR_CODES = {
@@ -121,6 +121,8 @@ const ERROR_CODES = {
 
     ws.onopen = () => {
       console.log("Connected to the websocket")
+      const hostname = spawnSync("hostname", { stdio: "pipe" }).stdout.toString().trim()
+      ws.send(`my-hostname:${hostname}`)
     }
 
     ws.onmessage = event => {
